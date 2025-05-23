@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDUCANDO ECUADOR LATINOS CHONE</title>
+
+        <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+
+        
+         img {
+            width: 150px; /* Fija el ancho en píxeles */
+            height: auto; /* Mantiene la relación de aspecto */
+            border-radius: 300px;
+            position: absolute; /* Posiciona la imagen de forma absoluta */
+            right: -0; /* La coloca en el borde derecho */
+            top: 40px; /* La coloca 50px por debajo del borde superior */
+        }
+            
+    
+        body {
+            font-family: Cooper Black, sans-serif;
+            margin: 40px;
+            color: black
+
+            
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 100px;
+            color: #111213;
+
+            
+        }
+        table, th, td {
+            border: 5px solid #ddd;
+            color: #151618;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            color: #121213;
+        }
+        input, button {
+            padding: 5px;
+            margin: 5px;
+            display: grid;
+            grid-template-columns: repeat(1, 1fr); /* 2 columnas */
+            gap: 5px;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            background-color: blue;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .edit-btn, .delete-btn {
+            background-color: #f39c12;
+            color: white;
+        }
+        .edit-btn:hover, .delete-btn:hover {
+            background-color: #e67e22;
+        }
+        .delete-btn {
+            background-color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>EDUCANDO ECUADOR LATINOS CHONE OIB</h1>
+    <h2>INSTRUCTOR: KELVIN SOLORZANO</h2>
+    <h2>DIRECTOR: DARWIN ZAMBRANO</h2>
+    <img src="educando.jpg" alt="Descripción de la imagen">
+
+
+    <!-- Formulario para agregar persona -->
+    <div>
+        <label for="ID">Cedula:</label>
+        <input type="text" id="ID" placeholder="Cedula">
+
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" placeholder="Nombre">
+ 
+        <label for="phone">Número de Teléfono:</label>
+        <input type="text" id="phone" placeholder="Número de Teléfono">
+        
+        <label for="instrument">Instrumento:</label>
+        <input type="text" id="instrument" placeholder="Instrumento">
+        
+        <button onclick="addPerson()">Guardar</button>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <button onclick="GuardarExcel()"> GuardarExcel</button>
+
+
+
+    </div>
+
+    <h2>Lista de Personas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Cedula</th>
+                <th>Nombre</th>
+                <th>Número de Teléfono</th>
+                <th>Instrumento</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="person-table">
+            <!-- Aquí se agregarán los registros -->
+        </tbody>
+    </table>
+
+    <script>
+        // Array para almacenar las personas
+        let persons = [];
+
+        // Función para agregar una persona
+        function addPerson() {
+            const ID = document.getElementById('ID').value;
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const instrument = document.getElementById('instrument').value;
+
+            if (ID && name && phone && instrument) {
+                const person = { ID, name, phone, instrument };
+                persons.push(person);
+                renderTable();
+                clearForm();
+            } else {
+                alert("Por favor, completa todos los campos.");
+            }
+        }
+
+        // Función para eliminar una persona
+        function deletePerson(index) {
+            persons.splice(index, 1);
+            renderTable();
+        }
+
+        // Función para editar una persona
+        function editPerson(index) {
+            const person = persons[index];
+            document.getElementById('ID').value = person.ID;
+            document.getElementById('name').value = person.name;
+            document.getElementById('phone').value = person.phone;
+            document.getElementById('instrument').value = person.instrument;
+            // Cambiar el botón "Guardar" a "Actualizar"
+            const saveButton = document.querySelector("button");
+            saveButton.textContent = "Actualizar";
+            saveButton.setAttribute("onclick", `updatePerson(${index})`);
+        }
+       
+
+
+        // Función para actualizar una persona
+        function updatePerson(index) {
+            const ID = document.getElementById('ID').value;
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const instrument = document.getElementById('instrument').value;
+
+            if (ID && name && phone && instrument) {
+                persons[index] = { ID, name, phone, instrument };
+                renderTable();
+                clearForm();
+                // Cambiar de vuelta el texto y la función del botón
+                const saveButton = document.querySelector("button");
+                saveButton.textContent = "Guardar";
+                saveButton.setAttribute("onclick", "addPerson()");
+            } else {
+                alert("Por favor, completa todos los campos.");
+            }
+        }
+
+        // Función para limpiar el formulario
+        function clearForm() {
+            document.getElementById('ID').value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('instrument').value = '';
+        }
+
+        // Función para renderizar la tabla
+        function renderTable() {
+            const tableBody = document.getElementById('person-table');
+            tableBody.innerHTML = '';
+
+            persons.forEach((person, index) => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${person.ID}</td>
+                    <td>${person.name}</td>
+                    <td>${person.phone}</td>
+                    <td>${person.instrument}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editPerson(${index})">Editar</button>
+                        <button class="delete-btn" onclick="deletePerson(${index})">Eliminar</button>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+        function addPerson() {
+    const ID = document.getElementById('ID').value;
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
+    const instrument = document.getElementById('instrument').value;
+
+    if (ID && name && phone && instrument) {
+        fetch('guardar.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `cedula=${encodeURIComponent(ID)}&nombre=${encodeURIComponent(name)}&telefono=${encodeURIComponent(phone)}&instrumento=${encodeURIComponent(instrument)}`
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert(data);
+            renderTable(); // esto es opcional, podrías mostrar solo el mensaje
+            clearForm();
+        })
+        .catch(error => {
+            alert("Error al guardar: " + error);
+        });
+    } else {
+        alert("Por favor, completa todos los campos.");
+    }
+}
+
+    </script>
+    <!-- Bootstrap JS (opcional para componentes interactivos) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
